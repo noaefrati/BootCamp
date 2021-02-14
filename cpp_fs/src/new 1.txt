@@ -1,0 +1,8 @@
+#include <cstring>
+#include <iosream>
+
+#include "simple_string.hpp"
+int main()
+{
+	return 0;
+}

@@ -1,0 +1,157 @@
+int CountingSort(int *arr, size_t size)
+
+* Check validation of arr
+
+1. range = Call FindMaxFunc(arr, size) - FindMinFunc(arr, size) + 1
+
+2. Dynamic allocation histogram using calloc, with space of range
+
+3. Dynamic aloocation result_arr with space of size
+
+4. if allocation was not successful, then :
+	
+	4.1. return 1
+
+5. else :
+
+	5.1 Call CountingSortImpl(arr, size, histogram, range, reault_arr, min)
+	
+	5.2. free allocated memory
+	
+	5.3. return 0
+	
+end - if - else
+
+end - func CountingSort
+	
+
+void CountingSortImpl(int *arr,
+					 size_t size,
+					 int *histogram, 
+					 size_t range,
+					 int *result_arr,
+					 int min)
+					 
+* Check validation of :arr, histogram, result_arr
+	
+1.	foreach i <- 0 to size 
+		
+		1.1 ++(histogram[arr[i] - min])
+	
+	end - for
+	
+2.	foreach i <- 1 to range + 1
+	
+		2.1 histogram[i] += histogram[i - 1] 
+		
+	end - for
+	
+3. for i <- size - 1 to -1
+	
+		3.1 --histogram[arr[i] - min]
+		
+		3.2 result_arr[histogram[arr[i]] = arr[i]
+		
+	end - for
+	
+4.	foreach store back result_arr into arr, from i<-0 to size-1
+	
+		4.1 arr[i] = result_arr[i]
+		
+	end - for
+	
+end - func CountingSortImpl
+
+
+int RadixSort(unsigned int *arr, size_t size, unsigned int n_bits)
+
+*Check validation of arr
+
+1. unsigned int mask = (1 << n_bits) -1
+
+2. Dynamic allocation for histogram with space of mask + 1
+
+3. if allocation was auccessful then :
+
+	3.1. Dynamic allocation for output with space of size
+
+		3.1.1 if failed free allocated memory(histogram), and return 1
+		
+		3.1.2 else :
+		
+			3.1.2.1 foreach i <- 0 to (sizeof(int)*8)/n_bits
+	
+				3.1.2.1.1 shift <- i * n_bits
+				
+				3.1.2.1.2 if i is even, then :
+					
+							RadixCountingSortImpl(arr,
+										 		  output,
+										 		  size,
+										 		  histogram,
+										 		  mask,
+										  		  shift)
+				3.1.2.1.3 else 
+					
+							RadixCountingSortImpl(output,
+										 		  arr,
+										  		  size,
+										  		  histogram,
+										          mask,
+										          shift)
+										  
+			   end - if else
+				
+			end - for
+			
+			free allocated memory
+			
+			return 0
+			
+	    end - if else
+	    
+	return 1
+	
+end func - RadixSort
+	
+	
+void RadixCountingImpl(unsigned int *input,
+					   unsigned int *output,
+					   size_t size,
+					   unsigned int *histogram,
+					   unsigned int mask,
+					   unsigned int shift)
+					   
+* Check validation of : input, output, histogram
+
+1. foreach i <- 0  to mask + 1
+
+	1.2 histogram[i] <- 0
+	
+   end - for
+
+2. foreach i <- 0 to size
+
+	2.1. ++(histogram[input[i] << shift & mask])
+	
+   end - for		
+	
+3. foreach i <- 1 to mask + 1
+
+	3.1 histogram[i] += histogram[i - 1]
+	
+   end - for				
+
+4. for i <- size - 1 to -1
+
+	4.1 --(histogram[arr[i] << shift & mask])
+	
+	4.2 output[histogram[arr[i] << shift & mask]] <- input[i]
+	
+   end - for
+
+end func RadixCountingImpl
+
+
+
+

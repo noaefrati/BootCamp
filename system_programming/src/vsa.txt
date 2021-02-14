@@ -1,0 +1,81 @@
+vsa_t *VSAInit(void *pool, size_t pool_size)
+
+	Create vsa_t *, and header_t *
+
+	Check alignment for pool
+	Check alignment for pool_size
+
+	assign pool to vsa_t 
+	assign header_t to the first free memory
+	mark the end of vsa (beginning of the structure + pool_size - sizeof of 2 struct)
+
+	return pointer of vsa_t
+
+end - VSAInit
+
+
+void *VSAAlloc(vsa_t *vsa, size_t size)
+
+	Check vsa is a valid pointer
+	
+	Aligned size_to_alloc
+	
+	call MergeAdjacentFreeBlock(vsa)
+	
+
+	if  MergeAdjacentFreeBlock(vsa) >= size
+		
+		runner_first_empty->chunk_size = size
+		
+		if the chunk can be divided into another block
+			
+			create new header for the remaining occupied space (next free)
+		
+		else	
+			
+			update runner_first_empty->chunk_Size with the total size		
+		
+		end - if 		
+		
+		return GetBlockAddress(runner_first_empty) + sizeof(header_t)
+				
+	end - if
+			
+	return null
+	
+end - VSAAlloc
+
+
+
+
+void VSAFree(void *block):
+
+	get pointer to header
+
+	with assert check magic_number is DEADBEEF
+
+	change header status to free
+
+end -  VSAFree
+
+
+
+
+size_t LargestChunkAvailable(vsa_t *vsa)
+
+	while end of pool is'nt reached: 
+   
+    	Call MergeAdjacentFreeBlock(block)
+   
+    	if size of MergeAdjacentBlock is bigger than result and mark as free,
+    		
+    		then apdate result.
+   		end - if
+   		
+    	block = GetNextBlock(block) 
+
+	end - while
+
+	return result
+
+end - LargestChunkAvailable

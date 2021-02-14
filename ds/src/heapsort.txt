@@ -1,0 +1,54 @@
+First the size is the original size of the array and also defined as the size 
+of the heap. After each iteration the size of the heap is reduced by 1.
+In the last iteration we have 1 last element in the heap.
+
+void Heapify(int arr[], size_t size, size_t index)
+{
+
+(*) initialized min_val to be the given index, 
+    and also calculating of the left and right child:
+   
+    min_val_index = index 
+    left_child_index = 2 * index + 1
+    right_child_index = 2 * index + 2
+ 
+    1. if (left_child_index < size &&
+    	   arr[min_val_index] > arr[left_child_index]) 
+        	
+        	min_val_index =  left_child
+        
+    2. if (right_child_index < size && 
+           arr[min_val_index] > arr[right_child])
+       
+       	   min_val_index = right_child_index
+ 
+    /*found an element that is smaller than the root */
+    3. if (min_val_index != index) 
+           
+       		Swap(arr[index], arr[min_val_index])
+        	Heapify(arr, size, min_val) /* call recursivley */ 
+   
+}
+
+void HeapSort(int arr[], size_t size)
+{
+	1. BuildHeap(arr, size)
+	
+	2. for i = size - 1 downto 0
+	   	 
+	   	 /* Swap the root node with the last node */
+	   	 Swap(arr[0], arr[i])
+	     
+	     /* Call Heapify with size i, means reducing the size of the heap by 1*/		
+		 Heapify(arr, i, 0)  
+	   
+	   end - for	
+}
+
+/* Build Min Heap: the root will be the smallest element */
+BuildHeap(int arr[], size_t size)
+{
+	for i = size/2 - 1 to -1
+		Heapify(arr, size, i)
+	end -for	
+}

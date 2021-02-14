@@ -1,0 +1,29 @@
+	Implicit 
+$2 = (const int *) 0x7ffff7fc6000     <g2- const global>
+$3 = (int *) 0x7ffff7fc8040           <static global> 
+$4 = (const int *) 0x7ffff7fc6004     <f- static const global>
+
+$5 = (const int *) 0x7fffffffdf58     <const local>
+
+$7 = 0x7ffff7fc6008 "printing global" <string literal>
+$8 = (int (*)(void)) 0x7ffff7fc5159   <extern function in shared libary>
+
+26		int i = 0;
+$9 = (void (*)(void)) 0x7ffff7fc51b2  <extern function in shared libary>
+$10 = (const int *) 0x7ffff7fc6028    <static const local>
+$11 = (int *) 0x7ffff7fc8038          <static local>
+	 
+	 5 data (?)
+	 ...
+	 3 data
+	 11 data
+	 10 rodata
+	 7 rodata
+	 4 rodata
+	 2 rodata
+	 9 text new
+	 8 text new
+	 
+	
+Explicit	
+$1 = (void *) 0x7ffff7fc71b2 <PrintOnly3> text

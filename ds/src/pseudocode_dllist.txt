@@ -1,0 +1,77 @@
+void DLLSplice(dllist_iter_t from,
+               dllist_iter_t to,
+               dllist_iter_t target)
+{
+	dllist_iter_t original_target_prev = NULL;
+	
+	assert(NULL != from);
+	assert(from != to);
+	assert(NULL != target);
+	
+	/* keep the adress of target->prev*/
+	original_target_prev = target->prev; 
+	
+	/* connect next pointer of original_target_prev- to from iter*/
+	original_target_prev->next = from;
+	
+	/* connect from->prev to original_target_prev*/
+	from->prev = original_target_prev;
+	
+	/* update target->prev to be to->prev */
+	target->prev = to->prev;
+	
+	/* connect the next pointer of to->prev to - target*/
+	to->prev->next = target;	
+}
+
+int DLLMultiFind(const dllist_iter_t from,
+                 const dllist_itet_t to,
+                 dllist_t *dest,
+                 int (*is_match)(const void *data, const void *against),
+                 const void *value)
+{
+	dllist_iter_t runner_from = NULL;
+	int is_multi_find = 1;
+	
+	assert(NULL != from);
+	assert(from != to);
+	assert(NULL != dest);
+	
+	runner_from = (dllist_itet_t) from;
+	for (; runner_from != to; runner_from = runner_from->next)
+	{
+		if (1 == is_match(data,runner_from->data))
+		{
+			dllist_iter_t ret_push_iter = DLLPushBack(dest, runner_from);
+			
+			/* 
+			  if iter->next and iter is the same iter - iter is tail, 
+			  and pushback failed.
+			*/
+			if (DLLIsSameIter(DLLNext(ret_push_iter), ret_push_iter)) 
+			{
+				is_multi_find = 0;
+				break;
+			}
+		}
+	}
+	return !(is_multi_find);
+}
+
+void DLLPopFront(dllist_t *lst)
+{
+	assert(NULL != lst);
+	
+	DLLRemove(DLLBegin(lst));
+}
+
+dllist_iter_t DLLPushFront(dllist_t *lst, const void *data)
+{
+	assert(NULL != lst);
+	assert(NULL != data);
+	
+	return (DLLInsertBefore(DLLBegin(lst), data)) ?
+	       (DLLBegin(lst)) : (DLLEnd(lst));
+}
+
+

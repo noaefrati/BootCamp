@@ -1,0 +1,62 @@
+(Pseudocode)
+void *memcpy(void *dest, const void *src, size_t n)
+1. check align - if we have a reminder from word size
+2. create 2 runners, one for byte_cpy, another word_cpy
+3. if not align: then copy byte-byte
+4. while the address is align- copy word by - word
+5. if n !=0 then copy byte-byte
+6.return dest
+
+(Implementation)
+
+#define WORD 8
+void *memcpy(void *dest, const void *src, size_t n)
+{
+    char *src_cpy_byte = NULL;
+    char *dst_cpy_byte = NULL;
+    size_t *src_cpy_word = NULL;
+    size_t *dst_cpy_word = NULL;
+    int rem = 0;
+    
+    assert(dest);
+    assert(src);
+    
+    rem = (char *)(void *)src % WORD;
+    src_cpy_word = (size_t *)(void *)src;
+    dst_cpy_word = (size_t *)dest;
+   
+   if (0 != rem)
+   {
+       src_cpy_byte = (char *)src_cpy_word;
+        dst_cpy_byte = (char *)dst_cpy_word;
+       
+       for (;0 =! n; --rem, --n, ++dst_cpy_byte, ++src_cpy_byte)
+       {
+           *dst_cpy_byte = *src_cpy_byte;
+       }
+        src_cpy_word = (size_t *)src_cpy_byte;
+        dst_cpy_word = (size_t *)dst_cpy_byte;
+    }
+    
+    while (0 < n)
+    {
+        *dst_cpy_word = *src_cpy_word;
+        ++src_cpy_word;
+        ++dst_cpy_word;
+        n -= WORD;
+    }
+    
+    if (0 < n)
+   {
+       src_cpy_byte = (char *)src_cpy_word;
+        dst_cpy_byte = (char *)dst_cpy_word;
+       
+       for (;0 =! n; --n, ++dst_cpy_byte, ++src_cpy_byte)
+       {
+           *dst_cpy_byte = *src_cpy_byte;
+       }
+     
+    }
+    
+    return src;
+}

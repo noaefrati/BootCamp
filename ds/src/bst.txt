@@ -1,0 +1,214 @@
+
+typedef struct bst bst_t;
+typedef struct node node_t;
+typedef node_t* bst_iter_t;
+
+struct node
+{
+	void *data;
+	node_t *parent;
+	node_t *right;
+	node_t *left;
+};
+
+struct bst
+{
+	node_t *dummy;
+	int (*cmp_func)(const void *data, const void *input);
+};
+
+/**************************** Create and Destroy ******************************/
+
+bst_t *BSTCreate(int (*cmp_func)(const void *data, const void *input))
+{
+	1. Create *new_tree, using dynamic allocation, with space of sizeof(bst_t).
+	
+	2. if allocation was success, then :
+		{
+			2.1. update new_tree->dummy->data = DEADBEEF
+			2.2. update new_tree->dummy->parent = NULL
+			2.3. update new_tree->dummy->right = NULL
+			2.4. update new_tree->dummy->left = NULL
+			2.5. update new_tree->cmp_func = cmp_func
+		}
+		
+		return new_tree	
+}
+ 
+void BSTDestroy(bst_t *tree)
+{
+	1. assert(NULL != tree)
+	2. while (!BSTIsEmpty(tree))
+	  {
+	    2.1. BSTRemove(BSTBegin(tree))
+	  }
+	3. tree->cmp_func = NULL
+	4. FREE(tree)
+}
+
+/****************************** Insert and Remove *****************************/
+
+/*
+ * Description: This function is used for inserting new data into the a given 
+ * BST pointed by tree. The data will be inserted in the correct location
+ * in a sorted manner, using the function provided by the user in BSTCreate.
+ * If the function does not behave as instructed, the behaviour is undefined. 
+ * Return value: Iterator to the newly inserted data. If insertion fails,
+ * return the end-iterator.
+ * Time complexity: Average: O(log n), Worst: O(n). 
+ */
+bst_iter_t BSTInsert(bst_t *tree, const void *data)
+{
+	assert(NULL != tree)
+	
+	if (tree->cmp_func(
+}
+
+/*
+ * Description: This function is used for removing a given iterator.
+ * Only the given iterator is removed, not its sub-tree.
+ * If the root iterator is removed, a new root is chosen by the following rule:
+ *  - left child, if exists.
+ *  - otherwise, right child, if exists.
+ *  - otherwise, the tree remains empty.
+ * Return value: Nothing.
+ * Time complexity: Average: O(log n), Worst: O(n). 
+ */
+void BSTRemove(bst_iter_t iter)
+{
+	1. if the node to be remove is a leaf - simply remove freom the tree.
+	          50                            50
+           /     \         delete(20)      /   \
+          30      70       --------->    30     70 
+         /  \    /  \                     \    /  \ 
+       20   40  60   80                   40  60   80
+	
+	2. else if: node to be remove has only one child, then:
+		copy the child to the node and remove the child
+		
+	    	  50                            50
+           /     \         delete(30)      /   \
+          30      70       --------->    40     70 
+            \    /  \                          /  \ 
+            40  60   80                       60   80
+            
+    3. else: node to be remove has 2 children: then:
+    		call BSTNext(iter) : go to the right child of iter - 
+    		and find the minimum (go to left child till his left points to null)
+    		
+              50                            60
+           /     \         delete(50)      /   \
+          40      70       --------->    40    70 
+                 /  \                            \ 
+                60   80                           80
+
+}
+
+/********************************* Basic Utility ******************************/
+
+size_t BSTSize(const bst_t *tree)
+{
+	1. size_t size = 0
+	2. assert(NULL != tree)
+	3. BSTForEach(BSTBegin((bst_t *)tree),
+				  BSTEnd((bst_t *)tree),
+				  IncreamentSize,
+				  (void *)&size)
+				  
+   4. return size
+}
+
+
+int BSTIsEmpty(const bst_t *tree)
+{
+	1. assert(NULL != tree)
+	2. return (NULL == tree->dummy->left)
+}
+
+
+int BSTIsSameIter(bst_iter_t one, bst_iter_t other)
+{
+	1. assert(NULL != one)
+	2. assert(NULL != other)
+	3. return (one == other)
+}
+
+/*
+ * Description: This function is used for getting the next iterator 
+ * (bst_iter_t) after the provided one.
+ * Return value: The function will return the next iterator after the provided.
+ * Calling BSTNext(BSTEnd(tree)) will yield itself.
+ * Time complexity: Average: O(log n), Worst: O(n). 
+ */
+bst_iter_t BSTNext(bst_iter_t iter);
+ 
+/*
+ * Description: This function is used for getting the previous iterator 
+ * (bst_iter_t) before the provided one.
+ * Return value: The function will return the prev iterator before the provided.
+ * If the provided iterator is the first iter, the function itself.
+ * Time complexity: Average: O(log n), Worst: O(n). 
+ */
+bst_iter_t BSTPrev(bst_iter_t iter);
+
+
+bst_iter_t BSTBegin(const bst_t *tree)
+{
+	1. check vadilitiy of tree
+	2. return (FindMin(tree->dummy))
+}
+
+bst_iter_t BSTEnd(const bst_t *tree); 
+{
+	1. assert(NULL != tree)
+	2. return tree->dummy
+}
+
+void *BSTGetData(bst_iter_t iter)
+{
+	1. check vadility of iter
+	2. return iter->data
+}
+
+/******************************** Advanced ************************************/
+
+/*
+ * Description: This function is used for iterating over the given
+ * range and performing an action on every node. 
+ * The action user's action function should return 0 on success.
+ * The function will call the passed action function on each iterator in
+ * the range. If one of the calls to the activation function fails (returns a 
+ * non 0 value), the iteration stops.
+ * Return value: This function returns 0 on success, 1 on failure.
+ * Pay attention! If the value of the field by which the tree is sorted will be 
+ * changed the whole list is compromised!
+ * UB: - if from is smaller than to.
+ *     - if from and to are not of the same tree.
+ * Time complexity: O(n).
+ */
+int BSTForEach(bst_iter_t from,
+               bst_iter_t to,
+               int (*action)(void *data, void *params),
+               void *params);
+
+/*
+ * Description: Traverse the given tree and search for an exact match to value.
+ * The search is done using the comparison function which was provided
+ * by the user in BSTCreate.
+ * Return value: This function returns the found iterator (which contains the
+ * desired value) on success, if no match was found return the end iterator.
+ * Time complexity: Average: O(log n), Worst: O(n). 
+ */
+bst_iter_t BSTFind(const bst_t *tree,
+                   const void *value)
+{
+	for (; i < BSTSize((bst_t *)tree); ++i)
+	{
+		if (0 == cmp_func(runner, (void *)value))
+		{
+			break;
+		}
+	}
+}
+
+#endif /* __BST_H_OL97_ILRD__ */
